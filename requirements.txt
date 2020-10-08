@@ -5,6 +5,7 @@ certifi==2020.6.20
 chardet==3.0.4
 datapipelines==1.0.7
 decorator==4.4.2
+dnspython==2.0.0
 idna==2.10
 merakicommons==1.0.9
 networkx==2.5
