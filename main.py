@@ -3,7 +3,7 @@ import os
 
 from cassiopeia import cassiopeia
 
-import recording_enabler
+from recording import recording_enabler
 
 from dotenv import load_dotenv
 load_dotenv()

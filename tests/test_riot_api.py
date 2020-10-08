@@ -5,8 +5,8 @@ import cassiopeia
 import datapipelines
 import dotenv
 
-import porofessor_extractor
-from riot_api_manager import get_all_challenger_players
+from extractors import porofessor_extractor
+from extractors.riot_api_manager import get_all_challenger_players
 
 dotenv.load_dotenv()
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))

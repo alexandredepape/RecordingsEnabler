@@ -1,6 +1,6 @@
 import unittest
 
-from mongo_manager import create_index
+from mongo.mongo_manager import create_index
 
 
 class MyTestCase(unittest.TestCase):

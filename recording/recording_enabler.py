@@ -10,11 +10,10 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import datapipelines
 from cassiopeia import get_summoner, cassiopeia, get_current_match
 
-import opgg_extractor
-import porofessor_extractor
-import recorded_games_manager
-from recorded_games_manager import already_enabled
-from riot_api_manager import get_all_challenger_players
+from extractors import opgg_extractor, porofessor_extractor
+from recording import recorded_games_manager
+from recording.recorded_games_manager import already_enabled
+from extractors.riot_api_manager import get_all_challenger_players
 
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR']
@@ -69,46 +68,15 @@ def check_in_game(challengers_queue, region):
             summoner = get_summoner(id=summoner_id, region=region)
             try:
                 current_match = get_current_match(summoner, region)
-                # duration = current_match.duration
+                game_time = current_match.duration.total_seconds()
                 match_id = current_match.id
-                # if duration.days < 0:
-                #     pass
-                # elif duration.seconds + RIOT_SPECTATOR_DELAY < MAXIMUM_RECORDING_TIME:
-                #     logger.info(f'Match {match_id} of {summoner_name} is already {duration.seconds} seconds long')
-                #     continue
+                if game_time < 0:
+                    logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
+                    continue
             except datapipelines.common.NotFoundError:
                 # logger.info(f'{summoner_name} not in game')
                 continue
-            opgg_match_data = opgg_extractor.get_match_data(summoner_name, region)
-            if not opgg_match_data:
-                logger.info(f'- "{summoner_name}" : Game not yet on OPGG')
 
-                continue
-            # match_id = opgg_match_data.get('match_id')
-            if not opgg_match_data.get('is_ranked'):
-                logger.info(f'{match_id} is not a ranked')
-                continue
-            try:
-                porofessor_match_data = porofessor_extractor.get_match_data(summoner_name, region)
-            except porofessor_extractor.PorofessorNoResponseException:
-                return
-
-            if not porofessor_match_data:
-                logger.info(f'- "{summoner_name}" : Game not yet on POROFESSOR')
-
-                continue
-
-            porofessor_duration = porofessor_match_data.get('duration')
-            if porofessor_duration.seconds > MAXIMUM_RECORDING_TIME:
-                logger.info(f'{match_id} is already {porofessor_duration.seconds} seconds long')
-                continue
-
-            porofessor_players = porofessor_match_data.get('players')
-            opgg_players_data = opgg_match_data.get('players_data')
-
-            players_data = get_final_players_data(porofessor_players, opgg_players_data)
-            if not players_data:
-                continue
             if already_enabled(match_id):
                 logger.info(f'{match_id} Already enabled.')
 
@@ -117,12 +85,9 @@ def check_in_game(challengers_queue, region):
                 match = {
                     'match_id': match_id,
                     'region': region,
-                    'duration': porofessor_duration.seconds,
-                    'riot_duration': current_match.duration.seconds,
+                    'game_time': game_time,
                     'inserted_at': datetime.datetime.now(),
-                    'players_data': players_data
                 }
-                logger.info(f'Adding {match_id}')
 
                 recorded_games_manager.add_game(match)
     except Exception:

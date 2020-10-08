@@ -1,9 +1,11 @@
 import logging
 import pymongo
-import mongo_manager
+from mongo import mongo_manager
 
 MATCHES = 'matches'
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def get_recorded_games():
     recorded_games_collection = mongo_manager.get_recorded_games_collection()
@@ -18,9 +20,10 @@ def already_enabled(match_id):
 
 
 def add_game(game):
+    match_id = game.get("match_id")
     recorded_games_collection = mongo_manager.get_recorded_games_collection()
     try:
         recorded_games_collection.insert_one(game)
     except pymongo.errors.DuplicateKeyError:
-        logging.info('Match already recording on opgg.')
-    logging.info(f'Added {game.get("match_id")}')
+        logger.info(f'Match {match_id} already recording.')
+    logger.info(f'Added {match_id}')

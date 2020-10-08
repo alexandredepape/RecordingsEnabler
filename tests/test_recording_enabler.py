@@ -4,7 +4,7 @@ import unittest
 from cassiopeia import cassiopeia, Region
 from dotenv import load_dotenv
 
-from recording_enabler import check_in_game
+from recording.recording_enabler import check_in_game
 
 load_dotenv()
 

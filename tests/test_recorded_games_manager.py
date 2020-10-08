@@ -1,9 +1,8 @@
 import logging
 import unittest
-import mongo_manager
-import recorded_games_manager
-from mongo_manager import get_recorded_games_collection
-from recorded_games_manager import add_game
+from recording import recorded_games_manager
+from mongo.mongo_manager import get_recorded_games_collection
+from recording.recorded_games_manager import add_game
 
 logging.basicConfig(level=logging.INFO, format=('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
