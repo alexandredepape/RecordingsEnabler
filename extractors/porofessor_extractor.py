@@ -40,7 +40,6 @@ def get_request_recording_url(summoner_name, region):
 
 
 def request_recording(summoner_name, region):
-    print(f'Requesting recording for {summoner_name} in {region}')
 
     url = get_request_recording_url(summoner_name, region)
     headers = {

@@ -7,10 +7,10 @@ MATCHES = 'matches'
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 def get_recorded_games():
     recorded_games_collection = mongo_manager.get_recorded_games_collection()
     games = [game for game in recorded_games_collection.find({})]
-    print(f'Found {len(games)} games')
     return games
 
 

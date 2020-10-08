@@ -19,7 +19,7 @@ cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR', 'EUW']
 MAXIMUM_RECORDING_TIME = 3 * 60
 RIOT_SPECTATOR_DELAY = 3 * 60
-NB_WORKERS = 5
+NB_WORKERS = 1
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -27,8 +27,9 @@ def search():
     while True:
         try:
             enable_challengers_games_recording()
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
+            logger.info(f'Sleeping some time because of {e}')
             time.sleep(RIOT_SPECTATOR_DELAY)
 
 
@@ -79,6 +80,8 @@ def check_in_game(challengers_queue, region):
             logger.info(f'{match_id} Already enabled.')
             continue
         recording_worked = porofessor_extractor.request_recording(summoner_name, region)
+        print(f'Requesting recording for {match_id} {region}')
+
         if recording_worked:
             match = {
                 'match_id': match_id,
