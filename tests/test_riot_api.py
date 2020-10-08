@@ -4,11 +4,9 @@ import unittest
 import cassiopeia
 import datapipelines
 import dotenv
-from cassiopeia import get_current_match
 
 import porofessor_extractor
-from opgg_extractor import spectate_tab
-from riot_api_manager import get_match, get_all_challenger_players
+from riot_api_manager import get_all_challenger_players
 
 dotenv.load_dotenv()
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))

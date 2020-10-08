@@ -5,9 +5,6 @@ from cassiopeia import cassiopeia
 
 import recording_enabler
 
-import dotenv
-dotenv.load_dotenv()
-
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 
 def main():

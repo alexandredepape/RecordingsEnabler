@@ -9,7 +9,6 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 import datapipelines
 from cassiopeia import get_summoner, cassiopeia, get_current_match
-from dotenv import load_dotenv
 
 import opgg_extractor
 import porofessor_extractor
@@ -17,7 +16,6 @@ import recorded_games_manager
 from recorded_games_manager import already_enabled
 from riot_api_manager import get_all_challenger_players
 
-load_dotenv()
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR']
 MAXIMUM_RECORDING_TIME = 3 * 60
