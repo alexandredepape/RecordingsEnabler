@@ -70,7 +70,7 @@ def check_in_game(challengers_queue, region):
                 current_match = get_current_match(summoner, region)
                 game_time = current_match.duration.total_seconds()
                 match_id = current_match.id
-                if game_time < 0:
+                if game_time > 0:
                     logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
                     continue
             except datapipelines.common.NotFoundError:
