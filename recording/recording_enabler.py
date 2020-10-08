@@ -28,7 +28,7 @@ def search():
         try:
             enable_challengers_games_recording()
         except Exception:
-            traceback.print_exception()
+            traceback.print_exc()
             time.sleep(RIOT_SPECTATOR_DELAY)
 
 
@@ -44,9 +44,9 @@ def get_final_players_data(porofessor_players, opgg_players_data):
 
 def enable_challengers_games_recording():
     for region in REGIONS_TO_SEARCH:
-        challengers = get_all_challenger_players(region)
+        challenger_ids = get_all_challenger_players(region)
         challengers_queue = queue.Queue()
-        for challenger in challengers:
+        for challenger in challenger_ids:
             challengers_queue.put(challenger)
 
         with ThreadPoolExecutor(max_workers=NB_WORKERS) as executor:
@@ -57,11 +57,10 @@ def enable_challengers_games_recording():
 def check_in_game(challengers_queue, region):
     logger.info("Worker here")
     while not challengers_queue.empty():
-        challenger = challengers_queue.get()
-        summoner_name = challenger.get('summoner_name')
-        summoner_id = challenger.get('summoner_id')
+        challenger_id = challengers_queue.get()
         # logger.info(f'[{challengers_queue.qsize()}] Checking {summoner_name}')
-        summoner = get_summoner(id=summoner_id, region=region)
+        summoner = get_summoner(id=challenger_id, region=region)
+        summoner_name = summoner.name
         try:
             current_match = get_current_match(summoner, region)
             game_time = current_match.duration.total_seconds()
@@ -69,6 +68,8 @@ def check_in_game(challengers_queue, region):
             if game_time > 0:
                 logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
                 continue
+        except datapipelines.common.NotFoundError:
+            continue
         except Exception:
             # logger.info(f'{summoner_name} not in game')
             logger.error(traceback.print_exc())
