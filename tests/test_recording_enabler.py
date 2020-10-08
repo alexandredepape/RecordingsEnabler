@@ -13,12 +13,14 @@ cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 
 class MyTestCase(unittest.TestCase):
     def test_check_in_game(self):
-
         region = Region.korea
         summoner_name = 'hide on bush'
         summoner = cassiopeia.get_summoner(name=summoner_name, region=region)
         summoner_id = summoner.id
         print(check_in_game(region, summoner_id))
+
+    def test_request_recording(self):
+        name = '해피 어네삐'
 
 
 if __name__ == '__main__':

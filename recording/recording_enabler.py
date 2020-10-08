@@ -56,38 +56,34 @@ def enable_challengers_games_recording():
 
 def check_in_game(challengers_queue, region):
     logger.info("Worker here")
-    try:
-        while not challengers_queue.empty():
-            challenger = challengers_queue.get()
-            summoner_name = challenger.get('summoner_name')
-            summoner_id = challenger.get('summoner_id')
-            # logger.info(f'[{challengers_queue.qsize()}] Checking {summoner_name}')
-            summoner = get_summoner(id=summoner_id, region=region)
-            try:
-                current_match = get_current_match(summoner, region)
-                game_time = current_match.duration.total_seconds()
-                match_id = current_match.id
-                if game_time > 0:
-                    logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
-                    continue
-            except datapipelines.common.NotFoundError:
-                # logger.info(f'{summoner_name} not in game')
+    while not challengers_queue.empty():
+        challenger = challengers_queue.get()
+        summoner_name = challenger.get('summoner_name')
+        summoner_id = challenger.get('summoner_id')
+        # logger.info(f'[{challengers_queue.qsize()}] Checking {summoner_name}')
+        summoner = get_summoner(id=summoner_id, region=region)
+        try:
+            current_match = get_current_match(summoner, region)
+            game_time = current_match.duration.total_seconds()
+            match_id = current_match.id
+            if game_time > 0:
+                logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
                 continue
+        except Exception:
+            # logger.info(f'{summoner_name} not in game')
+            logger.error(traceback.print_exc())
+            continue
 
-            if already_enabled(match_id):
-                logger.info(f'{match_id} Already enabled.')
-
-            request_worked = porofessor_extractor.request_recording(summoner_name, region)
-            if request_worked:
-                match = {
-                    'match_id': match_id,
-                    'region': region,
-                    'game_time': game_time,
-                    'inserted_at': datetime.datetime.now(),
-                }
-
-                recorded_games_manager.add_game(match)
-    except Exception:
-        logger.error(traceback.print_exc())
-        traceback.print_exception()
+        if already_enabled(match_id):
+            logger.info(f'{match_id} Already enabled.')
+            continue
+        recording_worked = porofessor_extractor.request_recording(summoner_name, region)
+        if recording_worked:
+            match = {
+                'match_id': match_id,
+                'region': region,
+                'game_time': game_time,
+                'inserted_at': datetime.datetime.now(),
+            }
+            recorded_games_manager.add_game(match)
 
