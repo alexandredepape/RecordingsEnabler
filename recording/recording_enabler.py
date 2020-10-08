@@ -16,7 +16,7 @@ from recording.recorded_games_manager import already_enabled
 from extractors.riot_api_manager import get_all_challenger_players
 
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
-REGIONS_TO_SEARCH = ['KR']
+REGIONS_TO_SEARCH = ['KR', 'EUW']
 MAXIMUM_RECORDING_TIME = 3 * 60
 RIOT_SPECTATOR_DELAY = 3 * 60
 NB_WORKERS = 5
