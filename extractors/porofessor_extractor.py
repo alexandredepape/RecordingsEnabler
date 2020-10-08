@@ -48,7 +48,6 @@ def request_recording(summoner_name, region):
     }
     response = requests.get(url, headers=headers, timeout=60)
     status_code = response.status_code
-    print(status_code)
     return status_code == 200
 
 

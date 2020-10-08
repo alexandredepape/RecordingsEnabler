@@ -31,9 +31,6 @@ def search():
             traceback.print_exception()
             time.sleep(RIOT_SPECTATOR_DELAY)
 
-        logger.info(f'Sleeping {RIOT_SPECTATOR_DELAY} before enabling again.')
-        time.sleep(RIOT_SPECTATOR_DELAY)
-
 
 def get_final_players_data(porofessor_players, opgg_players_data):
     players_data = {}
