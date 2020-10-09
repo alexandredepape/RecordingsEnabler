@@ -18,7 +18,7 @@ cassiopeia_logger = logging.getLogger('cassiopeia')
 cassiopeia_logger.setLevel(logging.ERROR)
 
 settings = cassiopeia.get_default_config()
-settings['logging']['print_calls'] = False
+# settings['logging']['print_calls'] = False
 cassiopeia.apply_settings(settings)
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 

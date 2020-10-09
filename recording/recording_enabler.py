@@ -7,7 +7,7 @@ import traceback
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import datapipelines
-from cassiopeia import get_summoner, cassiopeia, get_current_match
+from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue
 
 from extractors import porofessor_extractor
 from extractors.riot_api_manager import get_all_challenger_players
@@ -68,6 +68,10 @@ def check_in_game(challengers_queue, region):
             current_match = get_current_match(summoner, region)
             game_time = current_match.duration.total_seconds()
             match_id = current_match.id
+            print(current_match.type)
+            print(current_match.queue)
+            if current_match.queue != Queue.ranked_solo_fives:
+                continue
             if game_time > 0:
                 logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
                 continue
@@ -86,6 +90,7 @@ def check_in_game(challengers_queue, region):
 
         if recording_worked:
             match = {
+                'queue': current_match.queue,
                 'took_from': summoner_name,
                 'match_id': match_id,
                 'region': region,
