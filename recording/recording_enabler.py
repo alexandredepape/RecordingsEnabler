@@ -5,9 +5,10 @@ import queue
 import time
 import traceback
 from concurrent.futures.thread import ThreadPoolExecutor
+from multiprocessing import Manager
 
 import datapipelines
-from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue
+from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue, GameType
 
 from extractors import porofessor_extractor
 from extractors.riot_api_manager import get_all_challenger_players
@@ -51,7 +52,6 @@ def enable_challengers_games_recording():
         challengers_queue = queue.Queue()
         for challenger in challenger_ids:
             challengers_queue.put(challenger)
-
         with ThreadPoolExecutor(max_workers=NB_WORKERS) as executor:
             for i in range(NB_WORKERS):
                 executor.submit(check_in_game, challengers_queue, region)
@@ -66,10 +66,10 @@ def check_in_game(challengers_queue, region):
         summoner_name = summoner.name
         try:
             current_match = get_current_match(summoner, region)
-            game_time = current_match.duration.total_seconds()
             match_id = current_match.id
-            print(current_match.type)
-            print(current_match.queue)
+            game_time = current_match.duration.total_seconds()
+            if current_match.type != GameType.matched:
+                continue
             if current_match.queue != Queue.ranked_solo_fives:
                 continue
             if game_time > 0:
