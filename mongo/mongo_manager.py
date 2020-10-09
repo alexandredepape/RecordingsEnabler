@@ -1,6 +1,7 @@
 import os
 import pymongo
-
+import dotenv
+dotenv.load_dotenv()
 RECORDING_ENABLER_DATABASE = 'RecordingEnabler'
 CONNECTION_STRING = f"mongodb+srv://adp:{os.getenv('MONGO_PASSWORD')}@yeda.lan6r.gcp.mongodb.net/?ssl=true&ssl_cert_reqs=CERT_NONE"
 INDEX = 'match_id'
