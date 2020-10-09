@@ -58,10 +58,10 @@ def enable_challengers_games_recording():
 
 
 def check_in_game(challengers_queue, region):
-    logger.info("Worker here")
+    logger.info("Worker starts")
 
-    try:
-        while not challengers_queue.empty():
+    while not challengers_queue.empty():
+        try:
             challenger_id = challengers_queue.get()
             # logger.info(f'[{challengers_queue.qsize()}] Checking {summoner_name}')
             summoner = get_summoner(id=challenger_id, region=region)
@@ -100,6 +100,8 @@ def check_in_game(challengers_queue, region):
                     'inserted_at': datetime.datetime.now(),
                 }
                 recorded_games_manager.add_game(match)
-    except Exception as e:
-        logger.error(e)
+        except Exception as e:
+            logger.info(e)
+            logger.info("Worker stops")
+            break
 
