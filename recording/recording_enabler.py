@@ -1,19 +1,18 @@
 import datetime
+import logging
 import os
 import queue
 import time
 import traceback
-import logging
-
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import datapipelines
 from cassiopeia import get_summoner, cassiopeia, get_current_match
 
-from extractors import opgg_extractor, porofessor_extractor
+from extractors import porofessor_extractor
+from extractors.riot_api_manager import get_all_challenger_players
 from recording import recorded_games_manager
 from recording.recorded_games_manager import already_enabled
-from extractors.riot_api_manager import get_all_challenger_players
 
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR', 'EUW']
@@ -27,6 +26,9 @@ def search():
     while True:
         try:
             enable_challengers_games_recording()
+        except RuntimeError as e:
+            logger.error(e)
+            continue
         except Exception as e:
             traceback.print_exc()
             logger.info(f'Sleeping some time because of {e}')
