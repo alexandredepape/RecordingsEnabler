@@ -98,6 +98,7 @@ def check_in_game(challengers_queue, region):
                     'region': region,
                     'game_time': game_time,
                     'inserted_at': datetime.datetime.now(),
+                    'is_finished': False
                 }
                 recorded_games_manager.add_game(match)
         except Exception as e:
