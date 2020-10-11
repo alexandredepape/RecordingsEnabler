@@ -1,11 +1,8 @@
 import datetime
 import logging
 import os
-import queue
 import time
 import traceback
-from concurrent.futures.thread import ThreadPoolExecutor
-from multiprocessing import Manager
 
 import datapipelines
 from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue, GameType
@@ -19,17 +16,15 @@ cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR', 'EUW']
 MAXIMUM_RECORDING_TIME = 3 * 60
 RIOT_SPECTATOR_DELAY = 3 * 60
-NB_WORKERS = 1
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
 
 def search():
     while True:
         try:
             enable_challengers_games_recording()
-        except RuntimeError as e:
-            logger.error(e)
-            continue
         except Exception as e:
             traceback.print_exc()
             logger.info(f'Sleeping some time because of {e}')
@@ -49,60 +44,44 @@ def get_final_players_data(porofessor_players, opgg_players_data):
 def enable_challengers_games_recording():
     for region in REGIONS_TO_SEARCH:
         challenger_ids = get_all_challenger_players(region)
-        challengers_queue = queue.Queue()
-        for challenger in challenger_ids:
-            challengers_queue.put(challenger)
-        with ThreadPoolExecutor(max_workers=NB_WORKERS) as executor:
-            for i in range(NB_WORKERS):
-                executor.submit(check_in_game, challengers_queue, region)
+        check_in_game(challenger_ids, region)
 
 
-def check_in_game(challengers_queue, region):
+def check_in_game(challenger_ids, region):
     logger.info("Worker starts")
+    for challenger_id in challenger_ids:
+        summoner = get_summoner(id=challenger_id, region=region)
+        summoner_name = summoner.name
+        logger.info(f'Checking \"{summoner_name}\"')
 
-    while not challengers_queue.empty():
         try:
-            challenger_id = challengers_queue.get()
-            # logger.info(f'[{challengers_queue.qsize()}] Checking {summoner_name}')
-            summoner = get_summoner(id=challenger_id, region=region)
-            summoner_name = summoner.name
-            try:
-                current_match = get_current_match(summoner, region)
-                match_id = current_match.id
-                game_time = current_match.duration.total_seconds()
-                if current_match.type != GameType.matched:
-                    continue
-                if current_match.queue != Queue.ranked_solo_fives:
-                    continue
-                if game_time > 0:
-                    logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
-                    continue
-            except datapipelines.common.NotFoundError:
+            current_match = get_current_match(summoner, region)
+            match_id = current_match.id
+            game_time = current_match.duration.total_seconds()
+            if current_match.type != GameType.matched:
                 continue
-            except Exception:
-                # logger.info(f'{summoner_name} not in game')
-                logger.error(traceback.print_exc())
+            if current_match.queue != Queue.ranked_solo_fives:
                 continue
-
-            if already_enabled(match_id):
-                logger.info(f'{match_id} Already enabled.')
+            if game_time > 0:
+                logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
                 continue
-            recording_worked = porofessor_extractor.request_recording(summoner_name, region)
-            print(f'Requesting recording for {match_id} {region}')
+        except datapipelines.common.NotFoundError:
+            continue
 
-            if recording_worked:
-                match = {
-                    'queue': current_match.queue.value,
-                    'took_from': summoner_name,
-                    'match_id': match_id,
-                    'region': region,
-                    'game_time': game_time,
-                    'inserted_at': datetime.datetime.now(),
-                    'is_finished': False
-                }
-                recorded_games_manager.add_game(match)
-        except Exception as e:
-            logger.info(e)
-            logger.info("Worker stops")
-            break
+        if already_enabled(match_id):
+            logger.info(f'{match_id} Already enabled.')
+            continue
+        recording_worked = porofessor_extractor.request_recording(summoner_name, region)
+        print(f'Requesting recording for {match_id} {region}')
 
+        if recording_worked:
+            match = {
+                'queue': current_match.queue.value,
+                'took_from': summoner_name,
+                'match_id': match_id,
+                'region': region,
+                'game_time': game_time,
+                'inserted_at': datetime.datetime.now(),
+                'is_finished': False
+            }
+            recorded_games_manager.add_game(match)
