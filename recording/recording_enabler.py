@@ -8,7 +8,7 @@ import datapipelines
 from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue, GameType
 
 from extractors import porofessor_extractor
-from extractors.riot_api_manager import get_all_challenger_players
+from extractors.riot_api_manager import get_all_challenger_players, get_current_game_version
 from recording import recorded_games_manager
 from recording.recorded_games_manager import already_enabled
 
@@ -76,6 +76,7 @@ def check_in_game(challenger_ids, region):
 
         if recording_worked:
             match = {
+                'version': get_current_game_version(),
                 'queue': current_match.queue.value,
                 'took_from': summoner_name,
                 'match_id': match_id,

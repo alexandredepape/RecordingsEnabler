@@ -29,26 +29,10 @@ def get_all_challenger_players(region):
     return [entry.summoner.id for entry in challenger_league.entries]
 
 
-# def get_all_challenger_players(region):
-#     region_url = REGION_URLS.get(region)
-#     url = SCHEMA + region_url + BASE_URL + CHALLENGER_LEAGUE_URL
-#
-#     response = requests.get(url, headers={"X-Riot-Token": os.getenv("RIOT_KEY")}, timeout=60)
-#     parsed = response.json()
-#     summoners = parsed.get('entries')
-#     if not summoners:
-#         print(f'No summoners found {response.status_code}')
-#         return
-#     summoners = sorted(summoners, key=lambda summoner_data: summoner_data.get('leaguePoints'), reverse=True)
-#     summoners_data = []
-#     for summoner in summoners:
-#         summoner_data = {
-#             'summoner_name': summoner.get('summonerName'),
-#             'region': region,
-#             'summoner_id': summoner.get('summonerId')
-#         }
-#         summoners_data.append(summoner_data)
-#     return summoners_data
+def get_current_game_version():
+    r = requests.get('https://raw.githubusercontent.com/CommunityDragon/Data/master/patches.json')
+    version = r.json()['patches'][-1]['name']
+    return version
 
 
 def get_match(match_id, region):
