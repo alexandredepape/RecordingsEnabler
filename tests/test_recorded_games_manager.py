@@ -1,8 +1,10 @@
 import logging
 import unittest
+
+from extractors.riot_api_manager import get_current_game_version
 from recording import recorded_games_manager
 from mongo.mongo_manager import get_recorded_games_collection
-from recording.recorded_games_manager import add_game
+from recording.recorded_games_manager import add_game, update_games
 
 logging.basicConfig(level=logging.INFO, format=('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -19,6 +21,13 @@ class MyTestCase(unittest.TestCase):
             'match_id': 4642342342
         }
         add_game(game)
+
+    def test_update_games(self):
+        games = recorded_games_manager.get_recorded_games()
+        version = get_current_game_version()
+        for game in games:
+            game['version'] = version
+        update_games(games)
 
 
 if __name__ == '__main__':

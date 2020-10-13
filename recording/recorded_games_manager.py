@@ -1,5 +1,7 @@
 import logging
 import pymongo
+from pymongo import UpdateOne
+
 from mongo import mongo_manager
 
 MATCHES = 'matches'
@@ -27,3 +29,11 @@ def add_game(game):
     except pymongo.errors.DuplicateKeyError:
         logger.info(f'Match {match_id} already recording.')
     logger.info(f'Added {match_id}')
+
+
+def update_games(games):
+    update_ones = []
+    for game in games:
+        update_ones.append(UpdateOne({'match_id': game.get('match_id')}, {'$set': game}))
+    recorded_games_collection = mongo_manager.get_recorded_games_collection()
+    recorded_games_collection.bulk_write(update_ones)
