@@ -83,6 +83,6 @@ def check_in_game(challenger_ids, region):
                 'region': region,
                 'game_time': game_time,
                 'inserted_at': datetime.datetime.now(),
-                'is_finished': False
+                'finished': False
             }
             recorded_games_manager.add_game(match)

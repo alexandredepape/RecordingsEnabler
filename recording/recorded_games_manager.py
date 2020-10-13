@@ -1,4 +1,5 @@
 import logging
+
 import pymongo
 from pymongo import UpdateOne
 
@@ -34,6 +35,8 @@ def add_game(game):
 def update_games(games):
     update_ones = []
     for game in games:
-        update_ones.append(UpdateOne({'match_id': game.get('match_id')}, {'$set': game}))
-    recorded_games_collection = mongo_manager.get_recorded_games_collection()
-    recorded_games_collection.bulk_write(update_ones)
+        update_one = UpdateOne({'match_id': game.get('match_id')},
+                               {'$set': game, '$unset': {'players_data': 1, 'is_finished': 1}})
+        update_ones.append(update_one)
+        recorded_games_collection = mongo_manager.get_recorded_games_collection()
+        recorded_games_collection.bulk_write(update_ones)

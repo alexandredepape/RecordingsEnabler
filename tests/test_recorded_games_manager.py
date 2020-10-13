@@ -27,6 +27,7 @@ class MyTestCase(unittest.TestCase):
         version = get_current_game_version()
         for game in games:
             game['version'] = version
+            game['finished'] = False
         update_games(games)
 
 
