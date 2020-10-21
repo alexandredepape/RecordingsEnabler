@@ -3,8 +3,8 @@ import logging
 import os
 import time
 import traceback
-
 import datapipelines
+
 from cassiopeia import get_summoner, cassiopeia, get_current_match, Queue, GameType
 
 from extractors import porofessor_extractor
@@ -14,7 +14,6 @@ from recording.recorded_games_manager import already_enabled
 
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR', 'EUW']
-MAXIMUM_RECORDING_TIME = 3 * 60
 RIOT_SPECTATOR_DELAY = 3 * 60
 
 logger = logging.getLogger(__name__)

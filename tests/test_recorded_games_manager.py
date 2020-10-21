@@ -6,7 +6,8 @@ from recording import recorded_games_manager
 from mongo.mongo_manager import get_recorded_games_collection
 from recording.recorded_games_manager import add_game, update_games
 
-logging.basicConfig(level=logging.INFO, format=('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 
 
 class MyTestCase(unittest.TestCase):
@@ -24,9 +25,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_update_games(self):
         games = recorded_games_manager.get_recorded_games()
-        version = get_current_game_version()
         for game in games:
-            game['version'] = version
             game['finished'] = False
         update_games(games)
 
