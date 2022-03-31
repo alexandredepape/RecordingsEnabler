@@ -19,6 +19,7 @@ cassiopeia.apply_settings(config)
 
 
 def main():
+    print('hello')
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     logger.info('Starting Search')
