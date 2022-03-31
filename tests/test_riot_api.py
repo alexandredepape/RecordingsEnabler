@@ -11,9 +11,11 @@ from extractors.riot_api_manager import get_all_challenger_players
 dotenv.load_dotenv()
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 
+
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         self.assertEqual(True, False)
+
     def test_match_duration(self):
         nb_deltas = 0
         sum_deltas = 0
@@ -38,7 +40,8 @@ class MyTestCase(unittest.TestCase):
             print(f'{poro_match.get("duration").seconds}')
             sum_deltas += duration.seconds - poro_match.get("duration").seconds
             nb_deltas += 1
-        print(f'average delta : {sum_deltas//nb_deltas}')
+        print(f'average delta : {sum_deltas // nb_deltas}')
+
     def test_get_match(self):
         name = 'Bmav'
         region = 'KR'
@@ -55,5 +58,7 @@ class MyTestCase(unittest.TestCase):
         poro_match = porofessor_extractor.get_match_data(name, region)
         print(f'{poro_match.get("duration").seconds}')
         print(f'Delta = {poro_match.get("duration").seconds - seconds}')
+
+
 if __name__ == '__main__':
     unittest.main()

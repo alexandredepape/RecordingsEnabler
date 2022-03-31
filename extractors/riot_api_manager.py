@@ -30,9 +30,10 @@ def get_all_challenger_players(region):
 
 
 def get_current_game_version():
-    r = requests.get('https://raw.githubusercontent.com/CommunityDragon/Data/master/patches.json')
-    version = r.json()['patches'][-1]['name']
-    return version
+    response = requests.get('http://ddragon.leagueoflegends.com/api/versions.json')
+    latest_game_version = '.'.join(response.json()[0].split('.')[:2])
+    print(f"{latest_game_version=}")
+    return latest_game_version
 
 
 def get_match(match_id, region):

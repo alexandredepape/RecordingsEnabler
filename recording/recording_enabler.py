@@ -14,6 +14,8 @@ from recording.recorded_games_manager import already_enabled
 
 cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 REGIONS_TO_SEARCH = ['KR', 'EUW']
+REGIONS_TO_SEARCH = ['EUW']
+REGIONS_TO_SEARCH = ['KR']
 RIOT_SPECTATOR_DELAY = 3 * 60
 
 logger = logging.getLogger(__name__)
@@ -48,10 +50,10 @@ def enable_challengers_games_recording():
 
 def check_in_game(challenger_ids, region):
     logger.info("Worker starts")
-    for challenger_id in challenger_ids:
+    for position, challenger_id in enumerate(challenger_ids):
         summoner = get_summoner(id=challenger_id, region=region)
         summoner_name = summoner.name
-        logger.info(f'Checking \"{summoner_name}\"')
+        logger.info(f'Checking \"{summoner_name}\" {position}/{len(challenger_ids)}')
 
         try:
             current_match = get_current_match(summoner, region)
@@ -61,8 +63,11 @@ def check_in_game(challenger_ids, region):
                 continue
             if current_match.queue != Queue.ranked_solo_fives:
                 continue
+            # On porofessor you can only spectate if time < 3 minutes and if game_time is
+            # 3 minutes, on porofessor it is 0 seconds,
             if game_time > 0:
-                logger.info(f'Match {match_id} of {summoner_name} is already {game_time} seconds long')
+                minutes = str(datetime.timedelta(seconds=game_time))
+                logger.info(f'Match {match_id} of {summoner_name} is already {minutes} seconds long')
                 continue
         except datapipelines.common.NotFoundError:
             continue
@@ -71,7 +76,7 @@ def check_in_game(challenger_ids, region):
             logger.info(f'{match_id} Already enabled.')
             continue
         recording_worked = porofessor_extractor.request_recording(summoner_name, region)
-        print(f'Requesting recording for {match_id} {region}')
+        logger.info(f'Requesting recording for {match_id} {region}')
 
         if recording_worked:
             match = {
