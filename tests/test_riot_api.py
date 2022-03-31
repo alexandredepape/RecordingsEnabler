@@ -4,6 +4,7 @@ import unittest
 import cassiopeia
 import datapipelines
 import dotenv
+from cassiopeia import get_summoner
 
 from extractors import porofessor_extractor
 from extractors.riot_api_manager import get_all_challenger_players
@@ -13,6 +14,15 @@ cassiopeia.set_riot_api_key(os.getenv("RIOT_KEY"))
 
 
 class MyTestCase(unittest.TestCase):
+    def test_challenger_index(self):
+        region = 'KR'
+
+        zed99 = get_summoner(name="ZED99", region=region)
+        zed99_id = zed99.id
+
+        challengers = get_all_challenger_players(region)
+        print(challengers.index(zed99_id))
+
     def test_something(self):
         self.assertEqual(True, False)
 

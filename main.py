@@ -11,6 +11,7 @@ cassiopeia_logger = logging.getLogger('cassiopeia')
 cassiopeia_logger.setLevel(logging.ERROR)
 
 config = cassiopeia.get_default_config()
+config['pipeline']['RiotAPI']['limiting_share'] = 0.5
 config['pipeline']['RiotAPI']['api_key'] = os.getenv("RIOT_KEY")
 config['logging']['print_calls'] = False
 
