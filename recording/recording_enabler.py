@@ -84,7 +84,7 @@ def check_in_game(challenger_ids, region):
                 'queue': current_match.queue.value,
                 'took_from': summoner_name,
                 'match_id': match_id,
-                'region': region,
+                'region': region.lower(),
                 'game_time': game_time,
                 'inserted_at': datetime.datetime.now(),
                 'is_populated': False
