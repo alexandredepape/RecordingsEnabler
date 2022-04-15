@@ -80,7 +80,7 @@ def check_in_game(challenger_ids, region):
 
         if recording_worked:
             match = {
-                'version': get_current_game_version(),
+                'game_version': get_current_game_version(),
                 'queue': current_match.queue.value,
                 'took_from': summoner_name,
                 'match_id': match_id,
